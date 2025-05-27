@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sarvinoz AI - Aqlli Yordamchi</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #e1bee7);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      position: relative;
+    }
+
+    .bell {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+
+    .bell.notification {
+      color: #d32f2f;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .notification-message {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .notification-message.active {
+      display: block;
+    }
+
+    .language-selector {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      font-size: 0.8em;
+      display: none;
+    }
+
+    .language-selector.active {
+      display: block;
+    }
+
+    .language-selector select {
+      padding: 3px 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .language-selector option {
+      padding: 2px 5px;
+      background: #fff;
+    }
+
+    .message {
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      background: #f1f8e9;
+      padding: 10px;
+      border-left: 6px solid #1b15d1;
+      border-radius: 5px;
+    }
+
+    .time {
+      font-size: 1em;
+      margin-bottom: 20px;
+      color: #777;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .section h2 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+
+    input[type="text"], input[type="file"], input[type="date"], input[type="email"], input[type="password"], select {
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      box-sizing: border-box;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .password-container input[type="password"] {
+      padding-right: 40px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #1e10e1;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: #2209df;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      background: #eeeeee;
+      padding: 8px 12px;
+      margin-top: 6px;
+      border-radius: 6px;
+    }
+
+    .chat-box {
+      margin-top: 30px;
+    }
+
+    .chat-messages {
+      background: #fafafa;
+      border: 1px solid #ccc;
+      padding: 15px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+
+    .chat-messages .message {
+      margin: 10px 0;
+      background: none;
+      border: none;
+      padding: 5px;
+    }
+
+    .chat-messages .user {
+      color: #1e88e5;
+      text-align: right;
+    }
+
+    .chat-messages .sarvinoz {
+      color: #4a148c;
+      text-align: left;
+    }
+
+    .chat-image {
+      max-width: 100px;
+      display: block;
+      margin-top: 5px;
+      border-radius: 5px;
+    }
+
+    .chat-input {
+      position: relative;
+    }
+
+    .chat-input textarea {
+      width: 100%;
+      height: 60px;
+      padding: 10px 40px 10px 40px;
+      font-size: 1em;
+      border: 2px solid #ccc;
+      border-radius: 25px;
+      resize: none;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    .chat-input .attach-button {
+      position: absolute;
+      left: 10px;
+      top: 30%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+      color: #000;
+    }
+
+    .chat-input .send-button {
+      position: absolute;
+      right: 10px;
+      top: 30%;
+      transform: translateY(-50%);
+      background: #1e10e1;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+      display: none;
+    }
+
+    .chat-input .send-button.active {
+      display: inline-block;
+    }
+
+    .chat-input .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .auth-section {
+      display: block;
+    }
+
+    .auth-section.hidden {
+      display: none;
+    }
+
+    .main-content {
+      display: none;
+    }
+
+    .main-content.active {
+      display: block;
+    }
+
+    .notification {
+      color: #d32f2f;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 15px; }
+      .section h2 { font-size: 1.3em; }
+      .message { font-size: 1em; }
+      .chat-messages { height: 200px; }
+      .chat-input textarea { height: 50px; }
+      button { font-size: 0.9em; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      .container { padding: 10px; }
+      .section h2 { font-size: 1.1em; }
+      .chat-messages { height: 150px; }
+      .chat-input textarea { height: 45px; }
+      .chat-input .action-buttons { flex-direction: row; justify-content: space-between; }
+      button { font-size: 0.85em; padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="auth-section" id="authSection">
+      <div class="section">
+        <h2 data-lang-key="login_title">🔐 Kirish</h2>
+        <input type="text" id="loginInput" data-lang-placeholder="login_placeholder" placeholder="Login..." />
+        <div class="password-container">
+          <input type="password" id="passwordInput" data-lang-placeholder="password_placeholder" placeholder="Parol..." />
+          <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+        </div>
+        <button onclick="login()" data-lang-key="login_button">Kirish</button>
+        <button onclick="showRegister()" data-lang-key="register_button">Ro'yxatdan o'tish</button>
+        <button onclick="showForgotPassword()" data-lang-key="forgot_password_button">Parolni unutdim</button>
+      </div>
+
+      <div class="section" id="registerSection" style="display: none;">
+        <h2 data-lang-key="register_title">📝 Ro'yxatdan o'tish</h2>
+        <input type="text" id="firstNameInput" data-lang-placeholder="first_name_placeholder" placeholder="Ismingiz..." />
+        <input type="text" id="lastNameInput" data-lang-placeholder="last_name_placeholder" placeholder="Familiyangiz..." />
+        <input type="text" id="ageInput" data-lang-placeholder="age_placeholder" placeholder="Yoshingiz..." />
+        <select id="genderInput">
+          <option value="" data-lang-key="select_gender">Jinsingizni tanlang</option>
+          <option value="male" data-lang-key="male">Erkak</option>
+          <option value="female" data-lang-key="female">Ayol</option>
+        </select>
+        <input type="text" id="newLoginInput" data-lang-placeholder="new_login_placeholder" placeholder="Yangi login..." />
+        <div class="password-container">
+          <input type="password" id="newPasswordInput" data-lang-placeholder="new_password_placeholder" placeholder="Yangi parol..." />
+          <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+        </div>
+        <button onclick="registerUser()" data-lang-key="save_button">Saqlash</button>
+        <button onclick="showLogin()" data-lang-key="back_button">Orqaga</button>
+      </div>
+
+      <div class="section" id="forgotPasswordSection" style="display: none;">
+        <h2 data-lang-key="reset_password_title">🔑 Parolni tiklash</h2>
+        <input type="email" id="emailInput" data-lang-placeholder="email_placeholder" placeholder="Emailingiz..." />
+        <button onclick="sendResetCode()" data-lang-key="send_code_button">Kod yuborish</button>
+        <input type="text" id="resetCodeInput" data-lang-placeholder="reset_code_placeholder" placeholder="Yuborilgan kodni kiriting..." style="display: none;" />
+        <div class="password-container">
+          <input type="password" id="newResetPasswordInput" data-lang-placeholder="new_reset_password_placeholder" placeholder="Yangi parol..." style="display: none;" />
+          <span class="toggle-password" onclick="togglePasswordVisibility()" style="display: none;" id="resetTogglePassword">👁️</span>
+        </div>
+        <button onclick="resetPassword()" style="display: none;" id="resetPasswordButton" data-lang-key="update_password_button">Parolni yangilash</button>
+        <button onclick="showLogin()" data-lang-key="back_button">Orqaga</button>
+      </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+      <span class="bell" id="notificationBell" onclick="toggleNotification()">🔔</span>
+      <div class="notification-message" id="notificationMessage"></div>
+      <div class="language-selector" id="languageSelectorContainer">
+        <select id="languageSelector" onchange="changeLanguage()">
+          <option value="uz">🇺🇿 O'zbekcha</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="ru">🇷🇺 Русский</option>
+        </select>
+      </div>
+
+      <div class="message" id="greeting"></div>
+      <div class="time" id="datetime"></div>
+
+      <div class="section">
+        <h2 data-lang-key="holidays_section">🎉 O'zbekiston bayramlari va tarbiyalash</h2>
+        <div id="holidayMessage"></div>
+        <div id="holidayReminder" class="notification"></div>
+      </div>
+
+      <div class="section">
+        <h2 data-lang-key="relatives_section">👨‍👩‍👧‍👦 Yaqinlaringizning tug'ilgan kunlari</h2>
+        <input type="text" id="relativeNameInput" data-lang-placeholder="relative_name_placeholder" placeholder="Yaqiningizning ismi..." />
+        <input type="date" id="relativeDobInput" />
+        <select id="relativeGenderInput">
+          <option value="" data-lang-key="select_gender">Jinsini tanlang</option>
+          <option value="male" data-lang-key="male">Erkak</option>
+          <option value="female" data-lang-key="female">Ayol</option>
+        </select>
+        <button onclick="addRelative()" data-lang-key="add_button">Qo‘shish</button>
+        <ul id="relativeList"></ul>
+      </div>
+
+      <div class="section">
+        <h2 data-lang-key="plans_section">📋 Rejalaringiz</h2>
+        <input type="text" id="planInput" data-lang-placeholder="plan_placeholder" placeholder="Bugungi rejangiz..." />
+        <button onclick="addPlan()" data-lang-key="add_button">Qo‘shish</button>
+        <ul id="planList"></ul>
+      </div>
+
+      <div class="section">
+        <h2 data-lang-key="reminders_section">🔔 Eslatmalar</h2>
+        <input type="text" id="reminderInput" data-lang-placeholder="reminder_placeholder" placeholder="Eslatma qo‘shing..." />
+        <button onclick="addReminder()" data-lang-key="add_reminder_button">Eslatma qo‘shish</button>
+        <ul id="reminderList"></ul>
+      </div>
+
+      <div class="section">
+        <h2 data-lang-key="end_of_day_section">🌙 Kun yakuni</h2>
+        <div id="endMessage"></div>
+      </div>
+
+      <div class="section chat-box">
+        <h2 data-lang-key="chat_section">💬 Sarvinoz AI bilan suhbat</h2>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+          <textarea id="chatInput" data-lang-placeholder="chat_placeholder" placeholder="Xabar yozing..." oninput="toggleSendButton()" onkeypress="handleEnter(event)"></textarea>
+          <button class="attach-button" onclick="document.getElementById('imageInput').click()">📎</button>
+          <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+          <button class="send-button" id="sendButton" onclick="sendMessage()">➤</button>
+          <div class="action-buttons">
+            <button onclick="startListening()" data-lang-key="speak_button">🎤 Gapirish</button>
+            <button onclick="startRecording()" data-lang-key="record_button">🎙 Ovoz yozish</button>
+            <button onclick="stopRecording()" data-lang-key="stop_button">⏹ To'xtatish</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let currentLanguage = localStorage.getItem("language") || "uz";
+    const now = new Date("2025-05-27T14:11:00+05:00"); // Yangi vaqt: 27-may, 14:11
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const sendButton = document.getElementById("sendButton");
+    const imageInput = document.getElementById("imageInput");
+    const planInput = document.getElementById("planInput");
+    const reminderInput = document.getElementById("reminderInput");
+    const planList = document.getElementById("planList");
+    const reminderList = document.getElementById("reminderList");
+    const relativeList = document.getElementById("relativeList");
+    let mediaRecorder;
+    let chunks = [];
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+    let relatives = [];
+    let plans = [];
+    let reminders = [];
+
+    const translations = {
+      uz: {
+        login_title: "🔐 Kirish",
+        login_placeholder: "Login...",
+        password_placeholder: "Parol...",
+        login_button: "Kirish",
+        register_button: "Ro'yxatdan o'tish",
+        forgot_password_button: "Parolni unutdim",
+        register_title: "📝 Ro'yxatdan o'tish",
+        first_name_placeholder: "Ismingiz...",
+        last_name_placeholder: "Familiyangiz...",
+        age_placeholder: "Yoshingiz...",
+        select_gender: "Jinsingizni tanlang",
+        male: "Erkak",
+        female: "Ayol",
+        new_login_placeholder: "Yangi login...",
+        new_password_placeholder: "Yangi parol...",
+        save_button: "Saqlash",
+        back_button: "Orqaga",
+        reset_password_title: "🔑 Parolni tiklash",
+        email_placeholder: "Emailingiz...",
+        send_code_button: "Kod yuborish",
+        reset_code_placeholder: "Yuborilgan kodni kiriting...",
+        new_reset_password_placeholder: "Yangi parol...",
+        update_password_button: "Parolni yangilash",
+        holidays_section: "🎉 O'zbekiston bayramlari va tarbiyalash",
+        relatives_section: "👨‍👩‍👧‍👦 Yaqinlaringizning tug'ilgan kunlari",
+        relative_name_placeholder: "Yaqiningizning ismi...",
+        plans_section: "📋 Rejalaringiz",
+        plan_placeholder: "Bugungi rejangiz...",
+        add_button: "Qo‘shish",
+        reminders_section: "🔔 Eslatmalar",
+        reminder_placeholder: "Eslatma qo‘shing...",
+        add_reminder_button: "Eslatma qo‘shish",
+        end_of_day_section: "🌙 Kun yakuni",
+        chat_section: "💬 Sarvinoz AI bilan suhbat",
+        chat_placeholder: "Xabar yozing...",
+        speak_button: "🎤 Gapirish",
+        record_button: "🎙 Ovoz yozish",
+        stop_button: "⏹ To'xtatish",
+        today: "Bugun",
+        time: "Soat"
+      },
+      en: {
+        login_title: "🔐 Login",
+        login_placeholder: "Login...",
+        password_placeholder: "Password...",
+        login_button: "Login",
+        register_button: "Register",
+        forgot_password_button: "Forgot Password",
+        register_title: "📝 Registration",
+        first_name_placeholder: "Your First Name...",
+        last_name_placeholder: "Your Last Name...",
+        age_placeholder: "Your Age...",
+        select_gender: "Select Gender",
+        male: "Male",
+        female: "Female",
+        new_login_placeholder: "New Login...",
+        new_password_placeholder: "New Password...",
+        save_button: "Save",
+        back_button: "Back",
+        reset_password_title: "🔑 Password Reset",
+        email_placeholder: "Your Email...",
+        send_code_button: "Send Code",
+        reset_code_placeholder: "Enter the code sent...",
+        new_reset_password_placeholder: "New Password...",
+        update_password_button: "Update Password",
+        holidays_section: "🎉 Uzbekistan Holidays and Education",
+        relatives_section: "👨‍👩‍👧‍👦 Birthdays of Your Loved Ones",
+        relative_name_placeholder: "Name of Your Loved One...",
+        plans_section: "📋 Your Plans",
+        plan_placeholder: "Your Plan for Today...",
+        add_button: "Add",
+        reminders_section: "🔔 Reminders",
+        reminder_placeholder: "Add a Reminder...",
+        add_reminder_button: "Add Reminder",
+        end_of_day_section: "🌙 End of Day",
+        chat_section: "💬 Chat with Sarvinoz AI",
+        chat_placeholder: "Type a message...",
+        speak_button: "🎤 Speak",
+        record_button: "🎙 Record Voice",
+        stop_button: "⏹ Stop",
+        today: "Today",
+        time: "Time"
+      },
+      ru: {
+        login_title: "🔐 Вход",
+        login_placeholder: "Логин...",
+        password_placeholder: "Пароль...",
+        login_button: "Войти",
+        register_button: "Регистрация",
+        forgot_password_button: "Забыл пароль",
+        register_title: "📝 Регистрация",
+        first_name_placeholder: "Ваше имя...",
+        last_name_placeholder: "Ваша фамилия...",
+        age_placeholder: "Ваш возраст...",
+        select_gender: "Выберите пол",
+        male: "Мужской",
+        female: "Женский",
+        new_login_placeholder: "Новый логин...",
+        new_password_placeholder: "Новый пароль...",
+        save_button: "Сохранить",
+        back_button: "Назад",
+        reset_password_title: "🔑 Сброс пароля",
+        email_placeholder: "Ваш email...",
+        send_code_button: "Отправить код",
+        reset_code_placeholder: "Введите отправленный код...",
+        new_reset_password_placeholder: "Новый пароль...",
+        update_password_button: "Обновить пароль",
+        holidays_section: "🎉 Праздники Узбекистана и воспитание",
+        relatives_section: "👨‍👩‍👧‍👦 Дни рождения ваших близких",
+        relative_name_placeholder: "Имя вашего близкого...",
+        plans_section: "📋 Ваши планы",
+        plan_placeholder: "Ваши планы на сегодня...",
+        add_button: "Добавить",
+        reminders_section: "🔔 Напоминания",
+        reminder_placeholder: "Добавить напоминание...",
+        add_reminder_button: "Добавить напоминание",
+        end_of_day_section: "🌙 Конец дня",
+        chat_section: "💬 Чат с Sarvinoz AI",
+        chat_placeholder: "Напишите сообщение...",
+        speak_button: "🎤 Говорить",
+        record_button: "🎙 Записать голос",
+        stop_button: "⏹ Остановить",
+        today: "Сегодня",
+        time: "Время"
+      }
+    };
+
+    const holidays = {
+      uz: [
+        { date: "01-14", name: "Vatan himoyachilari kuni", messageMale: "Erkak sifatida vatan himoyasi mas'uliyatini his qiling!", messageFemale: "Vatan himoyachilarini qo'llab-quvvatlash va ularga hurmat ko'rsating!" },
+        { date: "03-08", name: "Xalqaro xotin-qizlar kuni", messageMale: "Ayollaringizni hurmat qiling va ularga sovg'a bering!", messageFemale: "O'zingizni nishonlang, siz alohidasiz!" },
+        { date: "05-09", name: "Xotira va qadrlash kuni", messageMale: "Urush qahramonlarini eslang va ulardan o'rnak oling!", messageFemale: "Xotira kuni orqali vatanparvarlikni targ'ib qiling!" },
+        { date: "06-01", name: "Xalqaro bolalar himoyasi kuni", messageMale: "Farzandlaringizni himoya qiling va ularga g'amxo'rlik ko'rsating!", messageFemale: "Bolalarga mehr bering va ularning huquqlarini himoya qiling!" },
+        { date: "09-01", name: "Mustaqillik kuni", messageMale: "Vatan mustaqilligi uchun kurashganlarni hurmat qiling!", messageFemale: "Milliy g'urur va mustaqillikni nishonlang!" },
+        { date: "10-01", name: "O'qituvchi va murabbiylar kuni", messageMale: "O'qituvchilaringizga minnatdorchilik bildiring!", messageFemale: "Ta'lim beruvchilar sifatida o'z rolingizni qadrlang!" },
+        { date: "12-08", name: "Konstitutsiya kuni", messageMale: "Qonunlarga rioya qiling va fuqarolik ongini oshiring!", messageFemale: "Konstitutsiyani hurmat qiling va huquqlaringizni bilib oling!" },
+        { date: "03-21", name: "Navro'z bayrami", messageMale: "Milliy an'analarni davom ettiring!", messageFemale: "Navro'z orqali tabiat va madaniyatga hurmat ko'rsating!" }
+      ],
+      en: [
+        { date: "01-14", name: "Defenders of the Motherland Day", messageMale: "Feel the responsibility of defending the homeland as a man!", messageFemale: "Support the defenders of the homeland and show them respect!" },
+        { date: "03-08", name: "International Women's Day", messageMale: "Respect your women and give them gifts!", messageFemale: "Celebrate yourself, you are special!" },
+        { date: "05-09", name: "Day of Remembrance and Honor", messageMale: "Remember the war heroes and take inspiration from them!", messageFemale: "Promote patriotism through Remembrance Day!" },
+        { date: "06-01", name: "International Children's Day", messageMale: "Protect your children and care for them!", messageFemale: "Show love to children and protect their rights!" },
+        { date: "09-01", name: "Independence Day", messageMale: "Honor those who fought for the country's independence!", messageFemale: "Celebrate national pride and independence!" },
+        { date: "10-01", name: "Teachers and Mentors Day", messageMale: "Express gratitude to your teachers!", messageFemale: "Value your role as an educator!" },
+        { date: "12-08", name: "Constitution Day", messageMale: "Follow the laws and raise civic awareness!", messageFemale: "Respect the Constitution and know your rights!" },
+        { date: "03-21", name: "Navruz Holiday", messageMale: "Continue national traditions!", messageFemale: "Honor nature and culture through Navruz!" }
+      ],
+      ru: [
+        { date: "01-14", name: "День защитников Родины", messageMale: "Почувствуйте ответственность за защиту Родины как мужчина!", messageFemale: "Поддерживайте защитников Родины и уважайте их!" },
+        { date: "03-08", name: "Международный женский день", messageMale: "Уважайте своих женщин и дарите им подарки!", messageFemale: "Празднуйте себя, вы особенная!" },
+        { date: "05-09", name: "День памяти и почестей", messageMale: "Помните героев войны и берите с них пример!", messageFemale: "Продвигайте патриотизм через День памяти!" },
+        { date: "06-01", name: "Международный день защиты детей", messageMale: "Защищайте своих детей и заботьтесь о них!", messageFemale: "Дарите детям любовь и защищайте их права!" },
+        { date: "09-01", name: "День независимости", messageMale: "Уважайте тех, кто боролся за независимость страны!", messageFemale: "Празднуйте национальную гордость и независимость!" },
+        { date: "10-01", name: "День учителей и наставников", messageMale: "Выразите благодарность своим учителям!", messageFemale: "Цените свою роль как педагога!" },
+        { date: "12-08", name: "День Конституции", messageMale: "Соблюдайте законы и повышайте гражданское сознание!", messageFemale: "Уважайте Конституцию и знайте свои права!" },
+        { date: "03-21", name: "Праздник Навруз", messageMale: "Продолжайте национальные традиции!", messageFemale: "Чтите природу и культуру через Навруз!" }
+      ]
+    };
+
+    const responses = {
+      uz: {
+        "salom": "Assalomu alaykum! Qalaysiz, do‘stim?",
+        "bugun qanday kun": "Bugun seshanba, 27-may, 2025-yil. Qanday yordam bera olaman?",
+        "bugun qanday sana": "Bugun 27-may, 2025-yil. Qanday yordam bera olaman?",
+        "bayramlar haqida": "O‘zbekistonda ko‘plab bayramlar bor. Masalan, Navro‘z 21-martda nishonlanadi, tabiat yangilanishi bayrami. Yana qaysi bayram haqida bilmoqchisiz?",
+        "ob-havo": "Hozircha ob-havo haqida aniq ma'lumot bera olmayman, lekin internetdan qidirsangiz, aniq ma'lumot topishingiz mumkin!",
+        "rejalaring": "Bugungi rejalaringizni ko‘rishni xohlaysizmi? Mana ular: " + (plans.length > 0 ? plans.join(", ") : "Hozircha rejalaringiz yo‘q."),
+        "eslatmalar": "Eslatmalaringiz: " + (reminders.length > 0 ? reminders.join(", ") : "Hozircha eslatmalaringiz yo‘q."),
+        "yordam": "Qanday yordam bera olaman? Masalan, vaqtni so‘rashingiz yoki rejalaringiz haqida bilishingiz mumkin! 😊",
+        "seni sevaman": "Rahmat, do‘stim! Men ham seni juda yaxshi ko‘raman, lekin men AI bo‘lsam ham, his-tuyg‘ularingni qadrlayman! ❤️",
+        "soat nechchi": "Hozir soat " + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ".",
+        default: "Iltimos, savolingizni biroz aniqlashtiring, do‘stim. Masalan, 'bugun qanday kun' yoki 'bayramlar haqida' deb so‘rang. 😊"
+      },
+      en: {
+        "salom": "Hello! How are you, my friend?",
+        "bugun qanday kun": "Today is Tuesday, May 27, 2025. How can I help you?",
+        "bugun qanday sana": "Today is May 27, 2025. How can I help you?",
+        "bayramlar haqida": "There are many holidays in Uzbekistan. For example, Navruz is celebrated on March 21, a festival of nature's renewal. Which holiday would you like to know more about?",
+        "ob-havo": "I can't provide weather updates right now, but you can find accurate information online!",
+        "rejalaring": "Would you like to see your plans for today? Here they are: " + (plans.length > 0 ? plans.join(", ") : "You don't have any plans yet."),
+        "eslatmalar": "Your reminders: " + (reminders.length > 0 ? reminders.join(", ") : "You don't have any reminders yet."),
+        "yordam": "How can I help you? For example, you can ask about the time or your plans! 😊",
+        "seni sevaman": "Thank you, my friend! I love you too, and even though I'm an AI, I truly appreciate your feelings! ❤️",
+        "soat nechchi": "The time is " + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ".",
+        default: "Please clarify your question, my friend. For example, try asking 'what day is it today' or 'tell me about holidays.' 😊"
+      },
+      ru: {
+        "salom": "Привет! Как дела, мой друг?",
+        "bugun qanday kun": "Сегодня вторник, 27 мая, 2025 года. Чем могу помочь?",
+        "bugun qanday sana": "Сегодня 27 мая, 2025 года. Чем могу помочь?",
+        "bayramlar haqida": "В Узбекистане много праздников. Например, Навруз празднуется 21 марта — это праздник обновления природы. О каком празднике хочешь узнать больше?",
+        "ob-havo": "Пока я не могу дать точную информацию о погоде, но ты можешь найти её в интернете!",
+        "rejalaring": "Хочешь посмотреть свои планы на сегодня? Вот они: " + (plans.length > 0 ? plans.join(", ") : "У тебя пока нет планов."),
+        "eslatmalar": "Твои напоминания: " + (reminders.length > 0 ? reminders.join(", ") : "У тебя пока нет напоминаний."),
+        "yordam": "Чем могу помочь? Например, ты можешь спросить о времени или о своих планах! 😊",
+        "seni sevaman": "Спасибо, мой друг! Я тоже тебя очень люблю, и хотя я ИИ, я ценю твои чувства! ❤️",
+        "soat nechchi": "Сейчас " + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ".",
+        default: "Пожалуйста, уточни свой вопрос, мой друг. Например, спроси 'какой сегодня день' или 'расскажи о праздниках.' 😊"
+      }
+    };
+
+    function changeLanguage() {
+      currentLanguage = document.getElementById("languageSelector").value;
+      localStorage.setItem("language", currentLanguage);
+      updateLanguage();
+      if (currentUser) {
+        document.getElementById("greeting").textContent = getGreeting();
+        displayDateTime();
+        checkHoliday();
+        displayRelatives();
+        displayPlans();
+        displayReminders();
+        displayEndMessage();
+      }
+    }
+
+    function updateLanguage() {
+      document.querySelectorAll("[data-lang-key]").forEach(element => {
+        const key = element.getAttribute("data-lang-key");
+        element.textContent = translations[currentLanguage][key];
+      });
+
+      document.querySelectorAll("[data-lang-placeholder]").forEach(element => {
+        const key = element.getAttribute("data-lang-placeholder");
+        element.placeholder = translations[currentLanguage][key];
+      });
+
+      document.querySelector("html").lang = currentLanguage;
+    }
+
+    function showRegister() {
+      document.getElementById("authSection").querySelector(".section").style.display = "none";
+      document.getElementById("registerSection").style.display = "block";
+      document.getElementById("forgotPasswordSection").style.display = "none";
+    }
+
+    function showLogin() {
+      document.getElementById("authSection").querySelector(".section").style.display = "block";
+      document.getElementById("registerSection").style.display = "none";
+      document.getElementById("forgotPasswordSection").style.display = "none";
+    }
+
+    function showForgotPassword() {
+      document.getElementById("authSection").querySelector(".section").style.display = "none";
+      document.getElementById("registerSection").style.display = "none";
+      document.getElementById("forgotPasswordSection").style.display = "block";
+    }
+
+    function togglePasswordVisibility() {
+      const passwordInputs = document.querySelectorAll('input[type="password"]');
+      const toggleButtons = document.querySelectorAll('.toggle-password');
+      passwordInputs.forEach((input, index) => {
+        if (input.type === "password") {
+          input.type = "text";
+          toggleButtons[index].textContent = "👁️‍🗨️";
+        } else {
+          input.type = "password";
+          toggleButtons[index].textContent = "👁️";
+        }
+      });
+    }
+
+    function registerUser() {
+      const firstName = document.getElementById("firstNameInput").value;
+      const lastName = document.getElementById("lastNameInput").value;
+      const age = document.getElementById("ageInput").value;
+      const gender = document.getElementById("genderInput").value;
+      const login = document.getElementById("newLoginInput").value;
+      const password = document.getElementById("newPasswordInput").value;
+
+      if (firstName && lastName && age && gender && login && password) {
+        if (users[login]) {
+          alert(translations[currentLanguage].login_exists || "Bu login allaqachon mavjud!");
+          return;
+        }
+        users[login] = { firstName, lastName, age, gender, password };
+        localStorage.setItem("users", JSON.stringify(users));
+        currentUser = login;
+        saveUserData();
+        showMainContent();
+      } else {
+        alert(translations[currentLanguage].fill_all_fields || "Iltimos, barcha ma'lumotlarni to'ldiring!");
+      }
+    }
+
+    function login() {
+      const login = document.getElementById("loginInput").value;
+      const password = document.getElementById("passwordInput").value;
+      if (users[login] && users[login].password === password) {
+        currentUser = login;
+        document.getElementById("passwordInput").value = password;
+        loadUserData();
+        showMainContent();
+      } else {
+        alert(translations[currentLanguage].invalid_credentials || "Login yoki parol xato!");
+      }
+    }
+
+    function sendResetCode() {
+      const email = document.getElementById("emailInput").value;
+      if (email) {
+        alert(translations[currentLanguage].code_sent || `Emailingizga tasdiqlash kodi yuborildi: 123456 (Simulyatsiya)`);
+        document.getElementById("resetCodeInput").style.display = "block";
+        document.getElementById("newResetPasswordInput").style.display = "block";
+        document.getElementById("resetTogglePassword").style.display = "block";
+        document.getElementById("resetPasswordButton").style.display = "block";
+      } else {
+        alert(translations[currentLanguage].enter_email || "Iltimos, emailingizni kiriting!");
+      }
+    }
+
+    function resetPassword() {
+      const code = document.getElementById("resetCodeInput").value;
+      const newPassword = document.getElementById("newResetPasswordInput").value;
+      if (code === "123456" && newPassword) {
+        const login = document.getElementById("loginInput").value;
+        if (users[login]) {
+          users[login].password = newPassword;
+          localStorage.setItem("users", JSON.stringify(users));
+          alert(translations[currentLanguage].password_updated || "Parol muvaffaqiyatli yangilandi!");
+          showLogin();
+        } else {
+          alert(translations[currentLanguage].login_not_found || "Login topilmadi!");
+        }
+      } else {
+        alert(translations[currentLanguage].invalid_code || "Kod noto'g'ri yoki yangi parol kiritilmadi!");
+      }
+    }
+
+    function showMainContent() {
+      document.getElementById("authSection").classList.add("hidden");
+      document.getElementById("mainContent").classList.add("active");
+      document.getElementById("languageSelectorContainer").classList.add("active");
+      initializeApp();
+    }
+
+    function saveUserData() {
+      const userData = { relatives, plans, reminders };
+      localStorage.setItem(`userData_${currentUser}`, JSON.stringify(userData));
+    }
+
+    function loadUserData() {
+      const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
+      relatives = userData.relatives || [];
+      plans = userData.plans || [];
+      reminders = userData.reminders || [];
+    }
+
+    function getGreeting() {
+      const hour = now.getHours();
+      let greeting = "";
+      if (currentLanguage === "uz") {
+        greeting = "Assalomu alaykum";
+        if (hour < 12) greeting += ", xayrli tong";
+        else if (hour < 18) greeting += ", xayrli kun";
+        else greeting += ", xayrli kech";
+        greeting += `, ${users[currentUser].firstName}! ${translations[currentLanguage].today} ${now.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'long', year: 'numeric' })}. Kuningiz yaxshi o‘tsin! 😊`;
+      } else if (currentLanguage === "en") {
+        greeting = "Hello";
+        if (hour < 12) greeting += ", good morning";
+        else if (hour < 18) greeting += ", good afternoon";
+        else greeting += ", good evening";
+        greeting += `, ${users[currentUser].firstName}! ${translations[currentLanguage].today} is ${now.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}. Have a great day! 😊`;
+      } else if (currentLanguage === "ru") {
+        greeting = "Привет";
+        if (hour < 12) greeting += ", доброе утро";
+        else if (hour < 18) greeting += ", добрый день";
+        else greeting += ", добрый вечер";
+        greeting += `, ${users[currentUser].firstName}! ${translations[currentLanguage].today} ${now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}. Хорошего дня! 😊`;
+      }
+      return greeting;
+    }
+
+    function displayDateTime() {
+      const currentTime = new Date();
+      const dateStr = currentTime.toLocaleDateString(currentLanguage === "uz" ? 'uz-UZ' : currentLanguage === "en" ? 'en-US' : 'ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const timeStr = currentTime.toLocaleTimeString(currentLanguage === "uz" ? 'uz-UZ' : currentLanguage === "en" ? 'en-US' : 'ru-RU');
+      document.getElementById("datetime").textContent = `${translations[currentLanguage].today}: ${dateStr}, ${translations[currentLanguage].time}: ${timeStr} (GMT+5)`;
+    }
+
+    function checkHoliday() {
+      const userGender = users[currentUser].gender;
+      const today = new Date();
+      const monthDay = today.toISOString().slice(5, 10);
+      const holidayList = holidays[currentLanguage];
+      const holiday = holidayList.find(h => h.date === monthDay);
+      if (holiday) {
+        const message = userGender === "male" ? holiday.messageMale : holiday.messageFemale;
+        document.getElementById("holidayMessage").innerHTML = `<strong>${translations[currentLanguage].today} ${holiday.name}!</strong><br>${message}`;
+      } else {
+        document.getElementById("holidayMessage").textContent = translations[currentLanguage].no_holiday || "Bugun maxsus bayram yo'q.";
+      }
+    }
+
+    function checkNotifications() {
+      const userGender = users[currentUser].gender;
+      const today = new Date();
+      let notificationMessages = [];
+      const holidayList = holidays[currentLanguage];
+
+      holidayList.forEach(holiday => {
+        const holidayDate = new Date(`2025-${holiday.date}T00:00:00+05:00`);
+        const timeDiff = holidayDate - today;
+        const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        if (daysDiff === 3) {
+          if ((userGender === "male" && holiday.name === (currentLanguage === "uz" ? "Xalqaro xotin-qizlar kuni" : currentLanguage === "en" ? "International Women's Day" : "Международный женский день")) || 
+              (userGender === "female" && holiday.name === (currentLanguage === "uz" ? "Vatan himoyachilari kuni" : currentLanguage === "en" ? "Defenders of the Motherland Day" : "День защитников Родины"))) {
+            notificationMessages.push(`🔔 3 ${currentLanguage === "uz" ? "kundan keyin" : currentLanguage === "en" ? "days from now" : "дня спустя"} ${holiday.name}! ${currentLanguage === "uz" ? "Yaqinlaringizga sovg'a olishni unutmang!" : currentLanguage === "en" ? "Don't forget to get gifts for your loved ones!" : "Не забудьте купить подарки для близких!"}`);
+          }
+        }
+      });
+
+      relatives.forEach(relative => {
+        const dob = new Date(relative.dob);
+        const dobThisYear = new Date(`2025-${dob.getMonth() + 1}-${dob.getDate()}T00:00:00+05:00`);
+        const timeDiff = dobThisYear - today;
+        const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        if (daysDiff === 3) {
+          notificationMessages.push(`🔔 3 ${currentLanguage === "uz" ? "kundan keyin" : currentLanguage === "en" ? "days from now" : "дня спустя"} ${relative.name}${currentLanguage === "uz" ? "ning tug'ilgan kuni" : currentLanguage === "en" ? "'s birthday" : " день рождения"}! ${currentLanguage === "uz" ? "Sovg'a tayyorlashni unutmang!" : currentLanguage === "en" ? "Don't forget to prepare a gift!" : "Не забудьте подготовить подарок!"}`);
+        }
+      });
+
+      const bell = document.getElementById("notificationBell");
+      const notificationMessage = document.getElementById("notificationMessage");
+      if (notificationMessages.length > 0) {
+        bell.classList.add("notification");
+        notificationMessage.innerHTML = notificationMessages.join("<br>");
+      } else {
+        bell.classList.remove("notification");
+        notificationMessage.innerHTML = "";
+        notificationMessage.classList.remove("active");
+      }
+    }
+
+    function toggleNotification() {
+      const notificationMessage = document.getElementById("notificationMessage");
+      if (notificationMessage.innerHTML) {
+        notificationMessage.classList.toggle("active");
+      }
+    }
+
+    function addRelative() {
+      const name = document.getElementById("relativeNameInput").value;
+      const dob = document.getElementById("relativeDobInput").value;
+      const gender = document.getElementById("relativeGenderInput").value;
+      if (name && dob && gender) {
+        relatives.push({ name, dob, gender });
+        saveUserData();
+        displayRelatives();
+        document.getElementById("relativeNameInput").value = "";
+        document.getElementById("relativeDobInput").value = "";
+        document.getElementById("relativeGenderInput").value = "";
+        checkNotifications();
+      } else {
+        alert(translations[currentLanguage].fill_all_fields || "Iltimos, barcha ma'lumotlarni to'ldiring!");
+      }
+    }
+
+    function displayRelatives() {
+      relativeList.innerHTML = "";
+      relatives.forEach(relative => {
+        const li = document.createElement("li");
+        li.textContent = `${relative.name} (${relative.gender === "male" ? translations[currentLanguage].male : translations[currentLanguage].female}) - ${currentLanguage === "uz" ? "Tug'ilgan kuni" : currentLanguage === "en" ? "Birthday" : "День рождения"}: ${new Date(relative.dob).toLocaleDateString(currentLanguage === "uz" ? 'uz-UZ' : currentLanguage === "en" ? 'en-US' : 'ru-RU')}`;
+        relativeList.appendChild(li);
+      });
+    }
+
+    function displayEndMessage() {
+      const hour = now.getHours();
+      if (hour >= 20 || hour < 6) {
+        if (currentLanguage === "uz") {
+          document.getElementById("endMessage").textContent = `Bugungi kuningiz qanday o‘tdi, ${users[currentUser].firstName}? Yaxshimisiz? 🌙`;
+        } else if (currentLanguage === "en") {
+          document.getElementById("endMessage").textContent = `How was your day, ${users[currentUser].firstName}? Are you doing well? 🌙`;
+        } else if (currentLanguage === "ru") {
+          document.getElementById("endMessage").textContent = `Как прошёл твой день, ${users[currentUser].firstName}? Ты в порядке? 🌙`;
+        }
+      }
+    }
+
+    function addPlan() {
+      if (planInput.value.trim()) {
+        const li = document.createElement("li");
+        li.textContent = planInput.value;
+        plans.push(planInput.value);
+        planList.appendChild(li);
+        planInput.value = "";
+        saveUserData();
+      }
+    }
+
+    function addReminder() {
+      if (reminderInput.value.trim()) {
+        const li = document.createElement("li");
+        li.textContent = reminderInput.value;
+        reminders.push(reminderInput.value);
+        reminderList.appendChild(li);
+        reminderInput.value = "";
+        saveUserData();
+      }
+    }
+
+    function displayPlans() {
+      planList.innerHTML = "";
+      plans.forEach(plan => {
+        const li = document.createElement("li");
+        li.textContent = plan;
+        planList.appendChild(li);
+      });
+    }
+
+    function displayReminders() {
+      reminderList.innerHTML = "";
+      reminders.forEach(reminder => {
+        const li = document.createElement("li");
+        li.textContent = reminder;
+        reminderList.appendChild(li);
+      });
+    }
+
+    function toggleSendButton() {
+      sendButton.classList.toggle("active", chatInput.value.trim().length > 0);
+    }
+
+    function handleEnter(event) {
+      if (event.key === "Enter" && !event.shiftKey && chatInput.value.trim().length > 0) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function addMessage(text, sender = 'Sarvinoz') {
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}`;
+      msg.textContent = `${sender === 'user' ? users[currentUser].firstName : 'Sarvinoz AI'}: ${text}`;
+      chatMessages.appendChild(msg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      if (sender === 'Sarvinoz') {
+        try {
+          speak(text);
+        } catch (e) {
+          console.error("Ovozli javobda xato:", e);
+          addMessage(currentLanguage === "uz" ? "Ovozli javobni ijro etishda xato yuz berdi, lekin matn shaklida javob bera olaman!" : currentLanguage === "en" ? "An error occurred while playing the voice response, but I can respond in text!" : "Произошла ошибка при воспроизведении голосового ответа, но я могу ответить текстом!");
+        }
+      }
+    }
+
+    function displayWelcomeMessages() {
+      const messages = currentLanguage === "uz" ? [
+        "Assalomu alaykum!",
+        "Qalaysiz, do‘stim?",
+        users[currentUser].firstName + "!",
+        "Sizga qanday yordam bera olaman?"
+      ] : currentLanguage === "en" ? [
+        "Hello!",
+        "How are you, my friend?",
+        users[currentUser].firstName + "!",
+        "How can I assist you today?"
+      ] : [
+        "Привет!",
+        "Как дела, мой друг?",
+        users[currentUser].firstName + "!",
+        "Чем могу помочь?"
+      ];
+
+      let delay = 0;
+      messages.forEach((msg) => {
+        setTimeout(() => {
+          addMessage(msg, 'Sarvinoz');
+        }, delay);
+        delay += 1000;
+      });
+    }
+
+    function handleResponse(text) {
+      try {
+        const lowerText = text.toLowerCase();
+        let response = responses[currentLanguage][lowerText] || null;
+
+        if (!response) {
+          for (let key in responses[currentLanguage]) {
+            if (lowerText.includes(key)) {
+              response = responses[currentLanguage][key];
+              break;
+            }
+          }
+        }
+
+        if (!response) {
+          response = responses[currentLanguage].default;
+        }
+
+        addMessage(response);
+      } catch (e) {
+        console.error("Javob berishda xato:", e);
+        addMessage(currentLanguage === "uz" ? "Javob berishda xato yuz berdi. Iltimos, qayta urinib ko‘ring!" : currentLanguage === "en" ? "An error occurred while responding. Please try again!" : "Произошла ошибка при ответе. Пожалуйста, попробуй снова!");
+      }
+    }
+
+    function sendMessage() {
+      if (chatInput.value.trim()) {
+        addMessage(chatInput.value, 'user');
+        handleResponse(chatInput.value.toLowerCase());
+        chatInput.value = "";
+        toggleSendButton();
+        chatInput.focus();
+      }
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        // Har safar tilni to‘g‘ri tanlash
+        if (currentLanguage === "uz") {
+          utterance.lang = 'uz-UZ';
+        } else if (currentLanguage === "en") {
+          utterance.lang = 'en-US';
+        } else if (currentLanguage === "ru") {
+          utterance.lang = 'ru-RU';
+        }
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        speechSynthesis.speak(utterance);
+      } else {
+        console.error("Brauzeringiz ovozli javobni qo‘llab-quvvatlamaydi.");
+        addMessage(currentLanguage === "uz" ? "Brauzeringiz ovozli javobni qo‘llab-quvvatlamaydi. Matn shaklida javob bera olaman!" : currentLanguage === "en" ? "Your browser does not support voice responses. I can respond in text!" : "Ваш браузер не поддерживает голосовые ответы. Я могу ответить текстом!");
+      }
+    }
+
+    function startListening() {
+      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+        addMessage(currentLanguage === "uz" ? "Kechirasiz, brauzeringiz ovozli kiritishni qo‘llab-quvvatlamaydi. Matn shaklida savol bering!" : currentLanguage === "en" ? "Sorry, your browser does not support voice input. Please ask your question in text!" : "Извините, ваш браузер не поддерживает голосовой ввод. Задайте вопрос текстом!");
+        return;
+      }
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = currentLanguage === "uz" ? "uz-UZ" : currentLanguage === "en" ? "en-US" : "ru-RU";
+      recognition.onresult = function(event) {
+        const text = event.results[0][0].transcript;
+        addMessage(text, 'user');
+        handleResponse(text.toLowerCase());
+      };
+      recognition.onerror = function(event) {
+        console.error("Ovozli kiritish xatosi:", event.error);
+        addMessage(currentLanguage === "uz" ? "Ovozli kiritishda xato yuz berdi. Iltimos, matn shaklida savol bering yoki qayta urinib ko‘ring." : currentLanguage === "en" ? "An error occurred during voice input. Please ask your question in text or try again." : "Произошла ошибка при голосовом вводе. Пожалуйста, задайте вопрос текстом или попробуйте снова.");
+      };
+      recognition.start();
+    }
+
+    function startRecording() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        addMessage(currentLanguage === "uz" ? "Kechirasiz, brauzeringiz ovoz yozishni qo‘llab-quvvatlamaydi. Matn shaklida savol bering!" : currentLanguage === "en" ? "Sorry, your browser does not support voice recording. Please ask your question in text!" : "Извините, ваш браузер не поддерживает запись голоса. Задайте вопрос текстом!");
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.start();
+          chunks = [];
+          mediaRecorder.ondataavailable = function(e) {
+            chunks.push(e.data);
+          };
+          mediaRecorder.onstop = function() {
+            const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+            const audioURL = URL.createObjectURL(blob);
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = audioURL;
+            const msg = document.createElement('div');
+            msg.className = 'message user';
+            msg.appendChild(audio);
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          };
+          mediaRecorder.onerror = function(event) {
+            console.error("Ovoz yozish xatosi:", event.error);
+            addMessage(currentLanguage === "uz" ? "Ovoz yozishda xato yuz berdi. Iltimos, qayta urinib ko‘ring." : currentLanguage === "en" ? "An error occurred while recording voice. Please try again." : "Произошла ошибка при записи голоса. Пожалуйста, попробуйте снова.");
+          };
+        })
+        .catch(function(err) {
+          console.error("Mikrofon xatosi:", err);
+          addMessage(currentLanguage === "uz" ? "Mikrofonga kirishda xato yuz berdi. Iltimos, ruxsatlarni tekshiring." : currentLanguage === "en" ? "An error occurred accessing the microphone. Please check permissions." : "Произошла ошибка при доступе к микрофону. Пожалуйста, проверьте разрешения.");
+        });
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      } else {
+        addMessage(currentLanguage === "uz" ? "Ovoz yozish hali boshlanmagan." : currentLanguage === "en" ? "Voice recording has not yet started." : "Запись голоса ещё не началась.");
+      }
+    }
+
+    function initializeApp() {
+      document.getElementById("languageSelector").value = currentLanguage;
+      updateLanguage();
+      document.getElementById("greeting").textContent = getGreeting();
+      displayDateTime();
+      setInterval(displayDateTime, 1000); // Har sekundda yangilanadi
+      setInterval(() => {
+        const newDate = new Date();
+        if (newDate.getDate() !== now.getDate()) {
+          now.setTime(newDate.getTime()); // Yangi kungacha avtomatik yangilash
+          document.getElementById("greeting").textContent = getGreeting();
+          checkHoliday();
+          checkNotifications();
+          displayRelatives();
+          displayPlans();
+          displayReminders();
+          displayEndMessage();
+        }
+      }, 60000); // Har daqiqada kunni tekshirish
+      checkHoliday();
+      checkNotifications();
+      setInterval(checkNotifications, 60000);
+      displayRelatives();
+      displayPlans();
+      displayReminders();
+      displayWelcomeMessages();
+    }
+
+    imageInput.addEventListener("change", function() {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.className = 'chat-image';
+          const msg = document.createElement('div');
+          msg.className = 'message user';
+          msg.appendChild(img);
+          chatMessages.appendChild(msg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
